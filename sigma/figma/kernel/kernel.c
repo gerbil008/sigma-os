@@ -1,8 +1,13 @@
-#include "../libc/stdio.h"
-
+#include "../libc/libc.h"
 #include "../include/tty.h"
+#include "../include/shell.h"
 
 void kernel_main(void) {
 	terminal_initialize();
 	printf("Welcome to Figma-OS!\n");
+	while(1){
+		if(shell_routine() == -1){
+			abort();
+		}
+	}
 }
