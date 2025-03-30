@@ -1,0 +1,79 @@
+.section .multiboot
+.align 4
+.long 0xE85250D6         # Multiboot2 magic number
+.long 0                  # Architecture (must be 0)
+.long 24                 # Length of header
+.long -(0xE85250D6 + 0 + 24) # Checksum
+
+# Reserve a stack
+.section .bss
+.align 16
+stack_bottom:
+.skip 16384  # 16 KiB stack space
+stack_top:
+
+.section .text
+.global _start
+.type _start, @function
+_start:
+    # Set up a temporary GDT (Global Descriptor Table)
+    cli                       # Disable interrupts
+    lgdt [gdt_descriptor]      # Load the GDT
+
+    # Enable PAE (Physical Address Extension)
+    movl %cr4, %eax
+    orl  $0x20, %eax
+    movl %eax, %cr4
+
+    # Enable long mode
+    movl $0xC0000080, %ecx    # Read EFER (Extended Feature Enable Register)
+    rdmsr
+    orl  $0x100, %eax         # Set Long Mode Enable (LME) bit
+    wrmsr
+
+    # Enable paging
+    movl $pml4_table, %eax
+    movl %eax, %cr3           # Load PML4 table
+
+    movl %cr0, %eax
+    orl  $0x80000001, %eax    # Enable paging and protected mode
+    movl %eax, %cr0
+
+    # Long jump to 64-bit mode
+    ljmp $0x08, $long_mode_start
+
+# 64-bit mode entry
+.section .text
+.global long_mode_start
+.type long_mode_start, @function
+long_mode_start:
+    movq $stack_top, %rsp   # Set up stack
+    call kernel_main        # Call kernel entry point
+
+    cli
+1:  hlt
+    jmp 1b
+
+# Global Descriptor Table (GDT)
+.section .data
+.align 16
+gdt:
+    .quad 0x0000000000000000  # Null descriptor
+    .quad 0x0020980000000000  # Code segment (Kernel)
+    .quad 0x0000900000000000  # Data segment (Kernel)
+
+gdt_descriptor:
+    .word (gdt_descriptor - gdt - 1)  # Size of GDT
+    .quad gdt                         # Address of GDT
+
+# Page tables (for identity mapping)
+.section .bss
+.align 4096
+pml4_table:
+    .quad pml3_table | 0x03
+.align 4096
+pml3_table:
+    .quad pml2_table | 0x03
+.align 4096
+pml2_table:
+    .quad 0x0000000000000083  # Map first 2MB of memory (Identity-mapped)

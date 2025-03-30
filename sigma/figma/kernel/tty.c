@@ -29,6 +29,14 @@ void terminal_initialize(void) {
     }
 }
 
+void change_column(size_t num) {
+    terminal_column = num;
+}
+
+size_t get_column(void) {
+    return terminal_column;
+}
+
 void terminal_setcolor(uint8_t color) {
     terminal_color = color;
 }
@@ -57,7 +65,7 @@ void terminal_delete_last_line() {
     int x, *ptr;
 
     for (x = 0; x < VGA_WIDTH * 2; x++) {
-        ptr = 0xB8000 + (VGA_WIDTH * 2) * (VGA_HEIGHT - 1) + x;
+        ptr = (int*)0xB8000 + (VGA_WIDTH * 2) * (VGA_HEIGHT - 1) + x;
         *ptr = 0;
     }
 }
