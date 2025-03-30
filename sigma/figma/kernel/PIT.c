@@ -11,15 +11,13 @@ void pit_poll(uint32_t * pit_ticks) {
     static uint32_t last_pit_value = 0;
     uint32_t current_pit_value;
 
-    // Lese den aktuellen PIT-Wert (16-Bit)
-    current_pit_value = inb(PIT_CH0);  // Lese das Low-Byte
-    current_pit_value |= (inb(PIT_CH0) << 8);  // Lese das High-Byte und kombiniere es
+    current_pit_value = inb(PIT_CH0);  
+    current_pit_value |= (inb(PIT_CH0) << 8);  
 
-    // Überprüfe, ob der PIT-Wert niedriger ist als der letzte Wert (Wickeln)
     if (current_pit_value < last_pit_value) {
-        (*pit_ticks)++;  // Erhöhe den Zähler
+        (*pit_ticks)++;  
     }
 
-    last_pit_value = current_pit_value;  // Speichere den letzten PIT-Wert
+    last_pit_value = current_pit_value;  
 }
 
