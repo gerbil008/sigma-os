@@ -1,4 +1,3 @@
-
 SOURCE_DIR="figma"           
 OUTPUT_DIR="figma/obj"      
 ASSEMBLY_FILES=$(find "$SOURCE_DIR" -type f -name "*.S")   
@@ -15,5 +14,5 @@ for file in $C_FILES; do
     echo "Compiling $file -> $output"
     x86_64-elf-gcc -c "$file" -o "$output" -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 done
-
+x86_64-elf-as "boot_new.S" -o "boot.o"
 echo "Build complete!"

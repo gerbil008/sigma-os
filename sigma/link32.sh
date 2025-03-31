@@ -10,3 +10,5 @@ else
     echo "Linking error"
     exit 1
 fi
+
+$CC -T "$LINKER_SCRIPT" -o "bootloader.bin" -ffreestanding -O2 -nostdlib "boot.o" -lgcc

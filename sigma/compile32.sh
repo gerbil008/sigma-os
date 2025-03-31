@@ -23,4 +23,5 @@ for file in $C_FILES; do
     i686-elf-gcc -c "$file" -o "$output" -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 done
 
+i686-elf-as "boot_new.S" -o "boot.o"
 echo "Build complete!"
