@@ -9,5 +9,5 @@ menuentry "sigma" {
 }
 EOF
 grub-mkrescue -o sigma.iso isodir 
-grub-install --target=i386-pc --boot-directory=isodir/boot --modules="biosdisk part_msdos ext2 multiboot"
+#grub-install --target=i386-pc --boot-directory=isodir/boot --modules="biosdisk part_msdos ext2 multiboot"
 
